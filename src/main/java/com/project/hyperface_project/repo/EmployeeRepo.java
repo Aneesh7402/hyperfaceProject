@@ -7,4 +7,5 @@ import com.project.hyperface_project.model.*;
 
 @Repository
 public interface EmployeeRepo extends JpaRepository<Employee,Long> {
+
 }

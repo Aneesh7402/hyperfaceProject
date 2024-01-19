@@ -1,7 +1,9 @@
 package com.project.hyperface_project.controller;
 
+import com.project.hyperface_project.exceptions.InvalidFieldException;
 import com.project.hyperface_project.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.project.hyperface_project.service.*;
 import com.project.hyperface_project.DTO.*;
@@ -34,18 +36,22 @@ public class EmpController {
 
 
     @PostMapping("insertProject")
-    public  String saveProject(@RequestBody ProjectInsert projectInsert){
+    public  ResponseEntity<ProjectDTO> saveProject(@RequestBody ProjectInsert projectInsert) throws RuntimeException{
         return projectService.saveMyProject(projectInsert);
     }
     @PostMapping("insertEmployee")
-    public String saveEmployee(@RequestBody EmployeeInsert employeeInsert){
+    public ResponseEntity<EmpDTO> saveEmployee(@RequestBody EmpDTO employeeInsert) throws InvalidFieldException,NullPointerException {
         return employeeService.saveMyEmp(employeeInsert);
     }
-    @PostMapping("fireEmployee/{id}")
-    public String fireEmployee(@PathVariable("id") Integer id,@RequestBody UnPw unpw){
-        return employeeService.fireMyEmp(id,unpw);
+    @GetMapping("fireEmployee/{id}")
+    public String fireEmployee(@PathVariable("id") Integer id){
+        return employeeService.fireMyEmp(id);
     }
 
+    @PostMapping("updateEmployee")
+    public ResponseEntity<EmpDTO> updateEmp(@RequestBody EmpDTO empDTO) throws InvalidFieldException{
+        return employeeService.update(empDTO);
+    }
 
     @GetMapping("/getAllEmps")
     public List<EmpDTO> getAllEmps(){

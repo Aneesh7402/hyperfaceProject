@@ -1,8 +1,10 @@
 package com.project.hyperface_project.controller;
 
 import com.project.hyperface_project.DTO.ProjectDTO;
+import com.project.hyperface_project.exceptions.InvalidFieldException;
 import com.project.hyperface_project.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,7 +17,7 @@ public class ProjectController {
     ProjectService projectService;
 
     @GetMapping("/getAllProjs")
-    public List<ProjectDTO> getProjs(){
+    public ResponseEntity<List<ProjectDTO>> getProjs(){
         return projectService.getProjs();
 
     }
@@ -24,9 +26,9 @@ public class ProjectController {
         projectService.deleteProject(id);
         return "Success";
     }
-    @GetMapping("/name/{id}/{name}")
-    public String nameChange(@PathVariable("name") String name,@PathVariable("id") Integer id){
-        return projectService.updateName(id,name);
+    @GetMapping("/update")
+    public ResponseEntity<ProjectDTO> updation(@RequestBody ProjectDTO projectDTO) throws InvalidFieldException {
+        return projectService.update(projectDTO);
     }
 
 //    @PostMapping("/assignEmpToProject")

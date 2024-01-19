@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.hyperface_project.model.*;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -18,6 +15,8 @@ import java.util.List;
 @Table(name = "employee")
 
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 
 public class Employee {
     @Id
@@ -34,7 +33,7 @@ public class Employee {
             }}
     }
     @JsonBackReference
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="departmentId")
     private Department departmentId;
 

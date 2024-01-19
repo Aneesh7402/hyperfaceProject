@@ -1,19 +1,18 @@
 package com.project.hyperface_project.controller;
 
 
-import com.project.hyperface_project.DTO.DeptInsert;
+import com.project.hyperface_project.DTO.DeptDTO;
+import com.project.hyperface_project.exceptions.InvalidFieldException;
 import com.project.hyperface_project.model.Department;
 import com.project.hyperface_project.model.Project;
 import com.project.hyperface_project.service.DepartmentService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.StreamingHttpOutputMessage;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/dept")
@@ -36,13 +35,17 @@ public class DeptController {
         List<Project> projs= departmentService.getDeptProjects(id);
         return projs.get(0).getProjectId();
     }
-    @PostMapping("insertDepartment")
-    public String saveDepartment(@RequestBody DeptInsert deptInsert){
+    @PostMapping("/insertDepartment")
+    public ResponseEntity<DeptDTO> saveDepartment(@RequestBody @Valid DeptDTO deptInsert)  {
         return departmentService.saveMyDept(deptInsert);
 
     }
+    @PostMapping("updateDept")
+    public ResponseEntity<DeptDTO> update(@RequestBody DeptDTO deptDTO) throws InvalidFieldException {
+        return departmentService.updateDept(deptDTO);
+    }
     @GetMapping("/fireDept/{id}")
-    public String fireDept(@PathVariable("id") Integer id){
+    public String fireDept(@PathVariable("id") Integer id)throws  InvalidFieldException{
         return departmentService.fireDept(id);
     }
 

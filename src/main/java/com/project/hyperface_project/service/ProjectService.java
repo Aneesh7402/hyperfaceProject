@@ -2,23 +2,31 @@ package com.project.hyperface_project.service;
 
 import com.project.hyperface_project.DTO.EmpDTO;
 import com.project.hyperface_project.DTO.ProjectDTO;
+import com.project.hyperface_project.exceptions.InvalidFieldException;
+import com.project.hyperface_project.mapper.ProjectMapper;
 import com.project.hyperface_project.model.*;
+import com.project.hyperface_project.repo.EmployeeRepo;
 import com.project.hyperface_project.repo.ProjectRepo;
 import com.project.hyperface_project.DTO.ProjectInsert;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.security.interfaces.EdECKey;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 
 public class ProjectService {
     @Autowired
     private ProjectRepo projectRepo;
+
+    @Autowired
+    private EmployeeRepo employeeRepo;
 
 
     @Autowired
@@ -28,6 +36,14 @@ public class ProjectService {
 
     private EntityManager entityManager;
 
+    @Autowired
+    private ProjectMapper projectMapper;
+
+    //Utility functions
+
+    public List<Employee> getALlEmpById(List<Integer> empIds){
+        return employeeRepo.findAllById(empIds.stream().map(Integer::longValue).collect(Collectors.toList()));
+    }
     public void deleteProject(Integer id){
         projectRepo.deleteById(id.longValue());
     }
@@ -44,25 +60,38 @@ public class ProjectService {
         }
         return projectList;
     }
+    public ProjectDTO projectToDTO(Project project){
+        List<Integer> empIDs=new ArrayList<>();
+        for(Employee employee:project.getEmployeeList()){
+            empIDs.add(employee.getEmpId());
+        }
+        return new ProjectDTO(project.getProjectId(),project.getName(),project.getDept().getDepartmentId(),empIDs);
+    }
 
     public List<Project> getAllProjects(){
         return projectRepo.findAll();
     }
 
-    public void saveProject(Project project){
-        projectRepo.save(project);
+    //Controller functions
+
+    public Project saveProject(Project project){
+        return projectRepo.save(project);
     }
-    public String saveMyProject(ProjectInsert projectInsert){
+    public ResponseEntity<ProjectDTO> saveMyProject(ProjectInsert projectInsert) throws RuntimeException{
         try{
+
             Project project=new Project(projectInsert.getName(),null,departmentService.getDeptById(projectInsert.getDeptId()).get());
-            saveProject(project);
-            return "Successful";
+            return new ResponseEntity<>(projectToDTO(saveProject(project)),HttpStatus.CREATED);
         }
         catch (NoSuchElementException e){
-            return "Invalid dept id";
+            throw new RuntimeException("Invalid dept Id",e);
         }
     }
-    public List<ProjectDTO> getProjs(){
+
+
+
+    //Controller calls
+    public ResponseEntity<List<ProjectDTO>> getProjs(){
         List<Project> projs=getAllProjects();
         List<ProjectDTO> projectDTOS=new ArrayList<>();
         Integer deptId;
@@ -80,20 +109,36 @@ public class ProjectService {
             }
             projectDTOS.add(new ProjectDTO(proj.getProjectId(),proj.getName(),deptId,empList));
         }
-        return projectDTOS;
+        return new ResponseEntity<>(projectDTOS, HttpStatus.FOUND);
     }
 
-    public String updateName(Integer id,String name){
-        Optional<Project> proj=getProjectById(id);
+    public ResponseEntity<ProjectDTO> update(ProjectDTO projectDTO) throws InvalidFieldException{
+        Optional<Project> proj=getProjectById(projectDTO.getProjectId());
         if(proj.isEmpty()){
-            return "Unsuccessful";
-
+            throw new InvalidFieldException("Invalid project id");
         }
         else{
             Project project=proj.get();
-            project.setName(name);
-            saveProject(project);
-            return "Successful";
+            projectMapper.updateProjectFromDTO(projectDTO,project);
+            if(!(project.getDept().getDepartmentId().equals(projectDTO.getDeptId()))){
+                throw new InvalidFieldException("You cannot change a project's department");
+            }
+            if(projectDTO.getEmployeeIds()!=null){
+                List<Employee> employeeUpdation=getALlEmpById(projectDTO.getEmployeeIds());
+                List<Employee> employeePrev=project.getEmployeeList();
+                List<Employee> employeeAddList=new ArrayList<>(employeeUpdation);
+                employeeAddList.removeAll(employeePrev);
+                employeePrev.removeAll(employeeUpdation);
+                for(Employee employee:employeeAddList){
+                    employee.getProjects().add(project);
+                    employeeRepo.save(employee);
+                }
+                for(Employee employee:employeePrev){
+                    employee.getProjects().remove(project);
+                    employeeRepo.save(employee);
+                }
+            }
+            return new ResponseEntity<>(projectToDTO(saveProject(project)) ,HttpStatus.OK);
         }
 
     }

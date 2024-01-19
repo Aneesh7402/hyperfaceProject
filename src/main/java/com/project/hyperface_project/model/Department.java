@@ -2,10 +2,7 @@ package com.project.hyperface_project.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 
@@ -13,7 +10,8 @@ import java.util.List;
 @Table(name = "department")
 
 @NoArgsConstructor
-
+@Builder
+@AllArgsConstructor
 
 public class Department {
     @Id
@@ -55,7 +53,7 @@ public class Department {
         this.projectList = projectList;
     }
     @JsonManagedReference
-    @OneToMany(mappedBy = "departmentId",cascade = {CascadeType.MERGE,CascadeType.PERSIST})
+    @OneToMany(mappedBy = "departmentId",cascade = CascadeType.PERSIST)
     private List<Employee> employeeList;
 
     @OneToMany(mappedBy = "dept",cascade = CascadeType.ALL)
