@@ -33,8 +33,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
@@ -68,17 +67,17 @@ public class EmployeeServiceTest {
         projectList.add(Project.builder().name("blah").projectId(1).employeeList(null).dept(department).build());
         projectList.add(Project.builder().name("blah2").projectId(2).employeeList(null).dept(department).build());
         department.setProjectList(projectList);
-//        when(projectService.getProjectsByIds(Mockito.anyList())).thenReturn(projectList);
+
         employee=Employee.builder().empId(1).departmentId(department).projects(projectList).build();
         empDTO=EmpDTO.builder().empID(1).departmentID(2).projectIDs(Stream.of(1,2).collect(Collectors.toList())).name("blah").build();
-        when(employeeRepo.save(any(Employee.class))).then(AdditionalAnswers.returnsFirstArg());
+
 
     }
 
     @Test
     public void EmployeeService_saveMyEmp_ReflectsEverything() throws InvalidFieldException {
         //Arrange
-
+        when(employeeRepo.save(any(Employee.class))).then(AdditionalAnswers.returnsFirstArg());
         Optional<Department> departmentOptional=Optional.ofNullable(department);
         when(departmentService.getDeptById(any(Integer.class))).thenReturn(departmentOptional);
 
@@ -96,12 +95,13 @@ public class EmployeeServiceTest {
     }
 
     @Test
-    public void testUpdateValidEmployee_C() throws InvalidFieldException {
+    public void EmployeeService_testUpdateValidEmployee_Created() throws InvalidFieldException {
         // Mock data
 
         Employee existingEmployee=employee;
 
         // Mock behaviors
+        when(employeeRepo.save(any(Employee.class))).then(AdditionalAnswers.returnsFirstArg());
         when(employeeService.getEmpByID(empDTO.getEmpID())).thenReturn(Optional.of(existingEmployee));
         when(departmentService.getDeptById(empDTO.getDepartmentID())).thenReturn(Optional.of(department));
         when(projectService.getProjectsByIds(Mockito.anyList())).thenReturn(projectList);
@@ -118,10 +118,77 @@ public class EmployeeServiceTest {
         assertEquals(HttpStatus.ACCEPTED, responseEntity.getStatusCode());
     }
 
+    @Test
+    public void EmployeeService_testUpdateInvalidEmployee_InvalidID() {
+        // Mock data
+        EmpDTO empDTOLocal=EmpDTO.builder().name("assd").departmentID(1).projectIDs(Stream.of(1,2).toList()).build();
 
 
+        // Mock behaviors
+        when(employeeService.getEmpByID(empDTO.getEmpID())).thenReturn(Optional.empty());
 
+        // AssertAndVerify
+        assertThrows(InvalidFieldException.class, () -> employeeService.update(empDTO));
+
+
+        verify(employeeMapper, never()).updateEmployeeFromDto(any(), any());
+        verify(employeeRepo, never()).save(any());
+    }
+
+    @Test
+    public void EmployeeService_testUpdate_InvalidDepartment_InvalidFieldException(){
+        //Arrage
+        EmpDTO empDTOLocal=EmpDTO.builder().empID(1).name("assd").departmentID(2).projectIDs(Stream.of(1,2).toList()).build();
+        when(departmentService.getDeptById(empDTO.getDepartmentID())).thenReturn(Optional.empty());
+        when(employeeService.getEmpByID(empDTO.getEmpID())).thenReturn(Optional.ofNullable(employee));
+        //Act
+        assertThrows(InvalidFieldException.class, () -> employeeService.update(empDTO));
+        //Assert
+        verify(employeeMapper, times(1)).updateEmployeeFromDto(any(), any());
+        verify(employeeRepo, never()).save(any());
+    }
+
+    @Test
+    public void testFireMyEmpSuccess() throws InvalidFieldException, RuntimeException {
+        // Mock data
+        Integer employeeId = 1;
+
+        // Mock behavior - Assume fireEmployeeById succeeds without throwing exceptions
+        doNothing().when(employeeRepo).deleteById(employeeId.longValue());
+
+        // Invoke the method
+        ResponseEntity<String> responseEntity = employeeService.fireMyEmp(employeeId);
+
+        // Verify behavior
+        verify(employeeRepo, times(1)).deleteById(employeeId.longValue());
+
+        // Assert the response
+        assertNotNull(responseEntity);
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals("Deletion Successful", responseEntity.getBody());
+    }
+
+    @Test
+    public void testFireMyEmpException() throws InvalidFieldException {
+        // Mock data
+        Integer employeeId = 123;
+
+        // Mock behavior - Assume fireEmployeeById throws an exception
+        doThrow(new NullPointerException("Some exception")).when(employeeRepo).deleteById(employeeId.longValue());
+
+        // Invoke the method and expect a RuntimeException
+        assertThrows(RuntimeException.class, () -> employeeService.fireMyEmp(employeeId));
+
+        // Verify behavior
+        verify(employeeRepo, times(1)).deleteById(employeeId.longValue());
+    }
 }
+
+
+
+
+
+
 
 
 

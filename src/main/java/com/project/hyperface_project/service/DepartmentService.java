@@ -1,9 +1,7 @@
 package com.project.hyperface_project.service;
 
-import com.project.hyperface_project.DTO.EmpDTO;
 import com.project.hyperface_project.exceptions.InvalidFieldException;
 import com.project.hyperface_project.mapper.DepartmentMapper;
-import com.project.hyperface_project.mapper.EmployeeMapper;
 import com.project.hyperface_project.model.Department;
 import com.project.hyperface_project.model.Employee;
 import com.project.hyperface_project.model.Project;
@@ -11,10 +9,6 @@ import com.project.hyperface_project.repo.DepartmentRepo;
 import com.project.hyperface_project.repo.EmployeeRepo;
 import com.project.hyperface_project.repo.ProjectRepo;
 import com.project.hyperface_project.DTO.DeptDTO;
-import jakarta.persistence.EntityManager;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -79,12 +73,15 @@ public class DepartmentService {
     public DeptDTO deptToDTO(Department department){
         List<Integer> empIDs=new ArrayList<>();
         List<Integer> projectIDs=new ArrayList<>();
+        if(department.getEmployeeList()!=null){
         for(Employee employee:department.getEmployeeList()){
             empIDs.add(employee.getEmpId());
-        }
+        }}
+        if(department.getProjectList()!=null){
         for(Project project:department.getProjectList()){
             projectIDs.add(project.getProjectId());
-        }
+        }}
+
         return new DeptDTO(department.getDepartmentId(),department.getName(),empIDs,projectIDs);
     }
 

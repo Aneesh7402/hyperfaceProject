@@ -62,9 +62,10 @@ public class ProjectService {
     }
     public ProjectDTO projectToDTO(Project project){
         List<Integer> empIDs=new ArrayList<>();
+        if(project.getEmployeeList()!=null){
         for(Employee employee:project.getEmployeeList()){
             empIDs.add(employee.getEmpId());
-        }
+        }}
         return new ProjectDTO(project.getProjectId(),project.getName(),project.getDept().getDepartmentId(),empIDs);
     }
 

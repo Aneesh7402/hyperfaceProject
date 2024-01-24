@@ -41,7 +41,7 @@ public class EmployeeService {
         return employeeRepo.save(employee);
     }
     public void fireEmployeeById(Integer id){
-        employeeRepo.deleteById(id.longValue());
+         employeeRepo.deleteById(id.longValue());
     }
 
     public Optional<Employee> getEmpByID(Integer id){return employeeRepo.findById(id.longValue());}
@@ -104,10 +104,13 @@ public class EmployeeService {
 
         }
     }
-    public String fireMyEmp(Integer id){
-
-            fireEmployeeById(id);
-            return "Success";
+    public ResponseEntity<String> fireMyEmp(Integer id) throws InvalidFieldException,RuntimeException{
+            try {
+                fireEmployeeById(id);
+            }catch(Exception e){
+                throw new RuntimeException("Deletion failed",e);
+            }
+            return new ResponseEntity<>("Deletion Successful",HttpStatus.OK);
 
     }
 
@@ -127,7 +130,7 @@ public class EmployeeService {
                     }
                     else{
 //
-                        System.out.println("aihfd");
+
                         employee.setDepartmentId(departmentOptional.get());
 
                     }
@@ -158,6 +161,8 @@ public class EmployeeService {
             return new ResponseEntity<EmpDTO>(empToDTO(employeeRepo.save(employee)),HttpStatus.ACCEPTED);
         }
     }
+
+
 
 
 

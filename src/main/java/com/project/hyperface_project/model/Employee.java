@@ -1,6 +1,7 @@
 package com.project.hyperface_project.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.hyperface_project.model.*;
 
@@ -17,6 +18,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Getter
+@Setter
 
 public class Employee {
     @Id
@@ -34,48 +37,23 @@ public class Employee {
     }
     @JsonBackReference
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name="departmentId")
-    private Department departmentId;
+    @JoinColumn(name="department")
+    private Department department;
 
-    public Integer getEmpId() {
-        return empId;
-    }
 
-    public void setEmpId(Integer empId) {
-        this.empId = empId;
-    }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Department getDepartmentId() {
-        return departmentId;
-    }
-
-    public void setDepartmentId(Department departmentId) {
-        this.departmentId = departmentId;
-    }
-
-    public List<Project> getProjects() {
-        return projects;
-    }
-
-    public void setProjects(List<Project> projects) {
-        this.projects = projects;
-    }
     @JsonManagedReference
     @ManyToMany(targetEntity = Project.class)
     @JoinTable(name="emp_project",joinColumns = @JoinColumn(name="empId"),inverseJoinColumns = @JoinColumn(name = "projectId"))
     private List<Project> projects;
 
+    @JsonIgnore
+    @OneToOne(mappedBy = "employeeDetails",cascade = CascadeType.ALL)
+    private UserAuth userAuth;
+
     public Employee(String name, Department departmentId, List<Project> projects) {
         this.name = name;
-        this.departmentId = departmentId;
+        this.department = departmentId;
         this.projects = projects;
     }
 }

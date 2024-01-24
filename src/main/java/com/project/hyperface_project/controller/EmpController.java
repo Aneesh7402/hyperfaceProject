@@ -44,7 +44,7 @@ public class EmpController {
         return employeeService.saveMyEmp(employeeInsert);
     }
     @GetMapping("fireEmployee/{id}")
-    public String fireEmployee(@PathVariable("id") Integer id){
+    public ResponseEntity<String> fireEmployee(@PathVariable("id") Integer id) throws RuntimeException,InvalidFieldException{
         return employeeService.fireMyEmp(id);
     }
 
@@ -64,6 +64,7 @@ public class EmpController {
         employeeService.fireEmployeeById(id);
         return "done";
     }
+
 
 
 }

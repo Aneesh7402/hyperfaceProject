@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public class DeptController {
         return projs.get(0).getProjectId();
     }
     @PostMapping("/insertDepartment")
+//    @PreAuthorize("hasAuthority(ROLE_CEO)")
     public ResponseEntity<DeptDTO> saveDepartment(@RequestBody @Valid DeptDTO deptInsert)  {
         return departmentService.saveMyDept(deptInsert);
 

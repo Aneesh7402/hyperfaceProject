@@ -2,15 +2,18 @@ package com.project.hyperface_project.exceptionhandler;
 
 import com.project.hyperface_project.DTO.ApiResponse;
 import com.project.hyperface_project.exceptions.InvalidFieldException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
@@ -53,6 +56,19 @@ public class ExceptionHandlerController {
         Map<String,Object> map=new HashMap<>();
         map.put("message",e.getMessage());
         return new ResponseEntity<>(new ApiResponse(505,"Invalid Call",map,Instant.now()),HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(value = AuthenticationCredentialsNotFoundException.class)
+    public ResponseEntity<ApiResponse> runtimeException(AuthenticationCredentialsNotFoundException e){
+        Map<String,Object> map=new HashMap<>();
+        map.put("message",e.getMessage());
+        return new ResponseEntity<>(new ApiResponse(506,"Invalid Call",map,Instant.now()),HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(value = Exception.class)
+    public ResponseEntity<Object> handleOtherExceptions(Exception e) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("message",e.getMessage());
+        return new ResponseEntity<>(new ApiResponse(506,"Invalid Call",map,Instant.now()),HttpStatus.BAD_REQUEST);
     }
 
 
