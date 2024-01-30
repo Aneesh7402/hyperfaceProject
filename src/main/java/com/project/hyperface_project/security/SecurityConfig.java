@@ -12,11 +12,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+
 
 @Configuration
 @EnableWebSecurity
@@ -34,20 +36,16 @@ public class SecurityConfig{
                 .sessionManagement((sessionManagement)->sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authz) -> authz
                         .requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/dept/insertDepartment").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.POST,"/dept/**").access(new WebExpressionAuthorizationManager("hasAuthority('MANAGER') and principal.getPriority() > 1"))
                         .requestMatchers(HttpMethod.GET).permitAll()
                         .anyRequest().authenticated()
                 );
+
         httpSecurity.addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);
         return  httpSecurity.build();
     }
 
-//    @Bean
-//    public UserDetailsService users(){
-//        UserDetails user=User.builder().username("user").password("password").roles("user").build();
-//        UserDetails admin=User.builder().username("admin").password("password").roles("user").build();
-//        return new InMemoryUserDetailsManager(user,admin);
-//    }
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception{

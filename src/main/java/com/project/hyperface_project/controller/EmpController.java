@@ -28,14 +28,14 @@ public class EmpController {
         this.departmentService=departmentService;
         this.projectService=projectService;
     }
-    @GetMapping("allEmployees")
+    @GetMapping("/allEmployees")
     public List<Employee> getEmployees(){
         return employeeService.getAllEmployees();
     }
 
 
 
-    @PostMapping("insertProject")
+    @PostMapping("/insertProject")
     public  ResponseEntity<ProjectDTO> saveProject(@RequestBody ProjectInsert projectInsert) throws RuntimeException{
         return projectService.saveMyProject(projectInsert);
     }
@@ -48,7 +48,7 @@ public class EmpController {
         return employeeService.fireMyEmp(id);
     }
 
-    @PostMapping("updateEmployee")
+    @PostMapping("/updateEmployee")
     public ResponseEntity<EmpDTO> updateEmp(@RequestBody EmpDTO empDTO) throws InvalidFieldException{
         return employeeService.update(empDTO);
     }

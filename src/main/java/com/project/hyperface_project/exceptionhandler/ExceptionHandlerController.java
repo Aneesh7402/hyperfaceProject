@@ -2,6 +2,7 @@ package com.project.hyperface_project.exceptionhandler;
 
 import com.project.hyperface_project.DTO.ApiResponse;
 import com.project.hyperface_project.exceptions.InvalidFieldException;
+import com.project.hyperface_project.exceptions.InvalidRoleAssignmentException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -70,6 +71,10 @@ public class ExceptionHandlerController {
         map.put("message",e.getMessage());
         return new ResponseEntity<>(new ApiResponse(506,"Invalid Call",map,Instant.now()),HttpStatus.BAD_REQUEST);
     }
-
-
+    @ExceptionHandler(value = InvalidRoleAssignmentException.class)
+    public ResponseEntity<Object> handleOtherExceptions(InvalidRoleAssignmentException e) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("message",e.getMessage());
+        return new ResponseEntity<>(new ApiResponse(506,"Invalid Role Assignment",map,Instant.now()),HttpStatus.BAD_REQUEST);
+    }
 }

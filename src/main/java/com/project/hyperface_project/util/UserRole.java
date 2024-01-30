@@ -1,8 +1,8 @@
 package com.project.hyperface_project.util;
 
 public enum UserRole {
+    OTHER,
     EMPLOYEE,
     MANAGER,
-    CTO,
-    CEO
+    BOARD_MEMBER
 }

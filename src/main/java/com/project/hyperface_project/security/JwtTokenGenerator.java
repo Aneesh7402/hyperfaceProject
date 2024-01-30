@@ -33,7 +33,7 @@ public class JwtTokenGenerator {
         builder.signWith(getSigningKey(),SignatureAlgorithm.HS256);
 
         String jwt= builder.compact();
-
+        System.out.println("Reached end");
         return jwt;
     }
     public String getUsernameFromToken(String token){
