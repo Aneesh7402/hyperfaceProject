@@ -38,17 +38,17 @@ public class JwtTokenGenerator {
     }
     public String getUsernameFromToken(String token){
         Claims claims=Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
-        System.out.println(claims.getSubject());
+
         return claims.getSubject();
     }
     public Boolean validateToken(String token) throws AuthenticationCredentialsNotFoundException, ExpiredJwtException {
-            System.out.println(token);
+
             Claims claims=Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
-            System.out.println("done");
+
             return true;
     }
     private Key getSigningKey() {
-        byte[] keyBytes= Decoders.BASE64.decode(SecurityConstant.secret);
+        byte[] keyBytes= Decoders.BASE64.decode(SecurityConstant.SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

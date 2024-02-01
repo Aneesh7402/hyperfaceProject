@@ -54,9 +54,7 @@ public class ProjectService {
         List<Project> projectList=new ArrayList<>();
         for(Integer id:listId){
             Optional<Project> proj=getProjectById(id);
-            if(proj.isPresent()){
-                projectList.add(proj.get());
-            }
+            proj.ifPresent(projectList::add);
         }
         return projectList;
     }

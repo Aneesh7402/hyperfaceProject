@@ -1,5 +1,6 @@
 package com.project.hyperface_project.security;
 
+import com.project.hyperface_project.service.CustomUserDetailService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -10,8 +11,6 @@ import org.springframework.security.authentication.AuthenticationCredentialsNotF
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -32,12 +31,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if(StringUtils.hasText(token) && jwtTokenGenerator.validateToken(token)){
             String username=jwtTokenGenerator.getUsernameFromToken(token);
-            System.out.println("after find username");
+
             UserDetails userDetails=customUserDetailService.loadUserByUsername(username);
-            System.out.println("oasjd");
+
             UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
         }
         filterChain.doFilter(request,response);
     }

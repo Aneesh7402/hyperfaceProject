@@ -37,16 +37,17 @@ public class DeptController {
         return projs.get(0).getProjectId();
     }
     @PostMapping("/insertDepartment")
-//    @PreAuthorize("hasAuthority(ROLE_CEO)")
     public ResponseEntity<DeptDTO> saveDepartment(@RequestBody @Valid DeptDTO deptInsert)  {
         return departmentService.saveMyDept(deptInsert);
 
     }
     @PostMapping("updateDept")
+    @PreAuthorize("hasAuthority('BOARD_MEMBER')")
     public ResponseEntity<DeptDTO> update(@RequestBody DeptDTO deptDTO) throws InvalidFieldException {
         return departmentService.updateDept(deptDTO);
     }
     @GetMapping("/fireDept/{id}")
+    @PreAuthorize("hasAuthority('BOARD_MEMBER') and principal.getPriority()>1")
     public String fireDept(@PathVariable("id") Integer id)throws  InvalidFieldException{
         return departmentService.fireDept(id);
     }

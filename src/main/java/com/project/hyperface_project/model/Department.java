@@ -53,7 +53,7 @@ public class Department {
         this.projectList = projectList;
     }
     @JsonManagedReference
-    @OneToMany(mappedBy = "department",cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "departmentId",cascade = CascadeType.PERSIST)
     private List<Employee> employeeList;
 
     @OneToMany(mappedBy = "dept",cascade = CascadeType.ALL)
