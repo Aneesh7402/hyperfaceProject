@@ -33,22 +33,22 @@ public class JwtTokenGenerator {
         builder.signWith(getSigningKey(),SignatureAlgorithm.HS256);
 
         String jwt= builder.compact();
-        System.out.println("Reached end");
+
         return jwt;
     }
     public String getUsernameFromToken(String token){
         Claims claims=Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
-        System.out.println(claims.getSubject());
+
         return claims.getSubject();
     }
     public Boolean validateToken(String token) throws AuthenticationCredentialsNotFoundException, ExpiredJwtException {
-            System.out.println(token);
+
             Claims claims=Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
-            System.out.println("done");
+
             return true;
     }
     private Key getSigningKey() {
-        byte[] keyBytes= Decoders.BASE64.decode(SecurityConstant.secret);
+        byte[] keyBytes= Decoders.BASE64.decode(SecurityConstant.SECRET);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

@@ -31,12 +31,13 @@ public class JwtFilter extends OncePerRequestFilter {
 
         if(StringUtils.hasText(token) && jwtTokenGenerator.validateToken(token)){
             String username=jwtTokenGenerator.getUsernameFromToken(token);
-            System.out.println("after find username");
+
             UserDetails userDetails=customUserDetailService.loadUserByUsername(username);
-            System.out.println("oasjd");
+
             UsernamePasswordAuthenticationToken authenticationToken=new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
             authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+
         }
         filterChain.doFilter(request,response);
     }

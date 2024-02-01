@@ -35,10 +35,15 @@ public class SecurityConfig{
                 .exceptionHandling((exception)->exception.authenticationEntryPoint(jwtAuthEntryPoint))
                 .sessionManagement((sessionManagement)->sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests((authz) -> authz
-                        .requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/dept/**").access(new WebExpressionAuthorizationManager("hasAuthority('MANAGER') and principal.getPriority() > 1"))
-                        .requestMatchers(HttpMethod.GET).permitAll()
+                        .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/auth/registerCEO").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/dept/insertDepartment").access(new WebExpressionAuthorizationManager("hasAuthority('BOARD_MEMBER')"))
+                        .requestMatchers(HttpMethod.GET,"/emp/fireEmployee/**").access(new WebExpressionAuthorizationManager("(hasAuthority('MANAGER') and principal.getPriority()>2) or hasAuthority('BOARD_MEMBER')"))
+                        .requestMatchers(HttpMethod.POST,"/emp/**").access(new WebExpressionAuthorizationManager("hasAnyAuthority('MANAGER','BOARD_MEMBER')"))
+                        .requestMatchers(HttpMethod.POST,"/proj/**").access(new WebExpressionAuthorizationManager("hasAnyAuthority('MANAGER', 'BOARD_MEMBER')"))
                         .anyRequest().authenticated()
+
+
                 );
 
         httpSecurity.addFilterBefore(jwtFilter(), UsernamePasswordAuthenticationFilter.class);

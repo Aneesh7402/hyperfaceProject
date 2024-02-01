@@ -1,5 +1,7 @@
-package com.project.hyperface_project.model;
+package com.project.hyperface_project.model
 
+import com.fasterxml.jackson.annotation.JsonBackReference
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.project.hyperface_project.util.UserRole
 import groovy.transform.Canonical;
 import jakarta.annotation.Generated;
@@ -38,10 +40,14 @@ class UserAuth implements UserDetails{
     private  boolean credentialsNonExpired;
     private  boolean enabled;
     Integer priority;
+    @JsonManagedReference
+    @OneToOne
+    @JoinColumn(name="employeeID",nullable = true)
+    Employee employee;
     protected UserAuth(){
 
     }
-    public UserAuth(String username, String password, Collection<? extends GrantedAuthority> authorities,Integer priority) {
+    public UserAuth(String username, String password, Collection<? extends GrantedAuthority> authorities,Integer priority,Employee employee) {
         this.username=username;
         this.password=password;
         this.authorities=authorities;
@@ -50,9 +56,10 @@ class UserAuth implements UserDetails{
         this.accountNonLocked=true;
         this.credentialsNonExpired=true;
         this.enabled=true;
+        this.employee=employee
     }
 
-    public UserAuth(Integer id, String username, String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities,Integer priority) {
+    public UserAuth(Integer id, String username, String password, boolean enabled, boolean accountNonExpired, boolean credentialsNonExpired, boolean accountNonLocked, Collection<? extends GrantedAuthority> authorities,Integer priority,Employee employee) {
         Assert.isTrue(username != null && !"".equals(username) && password != null, "Cannot pass null or empty values to constructor");
         this.id=id;
         this.username = username;
@@ -61,8 +68,9 @@ class UserAuth implements UserDetails{
         this.accountNonExpired = accountNonExpired;
         this.credentialsNonExpired = credentialsNonExpired;
         this.accountNonLocked = accountNonLocked;
-        this.authorities = Collections.unmodifiableSet(sortAuthorities(authorities));
+        this.authorities = authorities;
         this.priority=priority
+        this.employee=employee;
     }
 
     public Collection<GrantedAuthority> getAuthorities() {
@@ -97,19 +105,7 @@ class UserAuth implements UserDetails{
         this.password = null;
     }
 
-    private static SortedSet<GrantedAuthority> sortAuthorities(Collection<? extends GrantedAuthority> authorities) {
-        Assert.notNull(authorities, "Cannot pass a null GrantedAuthority collection");
-        SortedSet<GrantedAuthority> sortedAuthorities = new TreeSet(new AuthorityComparator());
-        Iterator var2 = authorities.iterator();
 
-        while(var2.hasNext()) {
-            GrantedAuthority grantedAuthority = (GrantedAuthority)var2.next();
-            Assert.notNull(grantedAuthority, "GrantedAuthority list cannot contain any null elements");
-            sortedAuthorities.add(grantedAuthority);
-        }
-
-        return sortedAuthorities;
-    }
 
     public boolean equals(Object obj) {
         if (obj instanceof UserAuth) {

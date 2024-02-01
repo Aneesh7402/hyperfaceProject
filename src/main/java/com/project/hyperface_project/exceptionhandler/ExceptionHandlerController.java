@@ -58,7 +58,12 @@ public class ExceptionHandlerController {
         map.put("message",e.getMessage());
         return new ResponseEntity<>(new ApiResponse(505,"Invalid Call",map,Instant.now()),HttpStatus.BAD_REQUEST);
     }
-
+    @ExceptionHandler(value = InvalidRoleAssignmentException.class)
+    public ResponseEntity<Object> handleOtherExceptions(InvalidRoleAssignmentException e) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("message",e.getMessage());
+        return new ResponseEntity<>(new ApiResponse(506,"Invalid Role Assignment",map,Instant.now()),HttpStatus.BAD_REQUEST);
+    }
     @ExceptionHandler(value = AuthenticationCredentialsNotFoundException.class)
     public ResponseEntity<ApiResponse> runtimeException(AuthenticationCredentialsNotFoundException e){
         Map<String,Object> map=new HashMap<>();
@@ -71,10 +76,5 @@ public class ExceptionHandlerController {
         map.put("message",e.getMessage());
         return new ResponseEntity<>(new ApiResponse(506,"Invalid Call",map,Instant.now()),HttpStatus.BAD_REQUEST);
     }
-    @ExceptionHandler(value = InvalidRoleAssignmentException.class)
-    public ResponseEntity<Object> handleOtherExceptions(InvalidRoleAssignmentException e) {
-        Map<String,Object> map=new HashMap<>();
-        map.put("message",e.getMessage());
-        return new ResponseEntity<>(new ApiResponse(506,"Invalid Role Assignment",map,Instant.now()),HttpStatus.BAD_REQUEST);
-    }
+
 }

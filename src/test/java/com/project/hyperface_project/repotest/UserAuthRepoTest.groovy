@@ -3,7 +3,7 @@ package com.project.hyperface_project.repotest
 import com.project.hyperface_project.model.UserAuth
 import com.project.hyperface_project.repo.UserAuthRepo
 import com.project.hyperface_project.util.UserRole
-import org.junit.jupiter.api.BeforeAll
+
 import org.junit.jupiter.api.BeforeEach
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection

@@ -30,41 +30,7 @@ import java.util.stream.Stream;
 
 
 @SpringBootTest
-@AutoConfigureMockMvc
-@DataJpaTest
-@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
+
 class HyperfaceProjectApplicationTests {
-	DeptDTO deptDTO=new DeptDTO();
-	String token;
-    private final WebTestClient client;
-
-	private final UserAuthRepo userAuthRepo;
-
-	private final PasswordEncoder passwordEncoder;
-
-
-	@Autowired
-	public HyperfaceProjectApplicationTests(WebTestClient client,UserAuthRepo userAuthRepo,PasswordEncoder passwordEncoder){
-		this.client=WebTestClient.bindToServer().baseUrl("http://localhost:8080").build();
-		this.userAuthRepo=userAuthRepo;
-		this.passwordEncoder=passwordEncoder;
-	}
-	@BeforeEach
-	public void setup(){
-		List<SimpleGrantedAuthority> simpleGrantedAuthorities = Stream.of(new SimpleGrantedAuthority(UserRole.MANAGER.toString())).toList();
-		UserAuth userAuth=new UserAuth("Aneesh",passwordEncoder.encode("password"),simpleGrantedAuthorities,2);
-
-		userAuthRepo.save(userAuth);
-		RegDTO regDTO=new RegDTO("Aneesh","password");
-        token = client.post().uri("auth/login").contentType(MediaType.APPLICATION_JSON).bodyValue(regDTO).exchange().expectBody(String.class).returnResult().getResponseBody();
-
-	}
-	@Test
-	public void DepartmentController_insertDepartment_Successful(){
-
-	}
-
-
-
 
 }

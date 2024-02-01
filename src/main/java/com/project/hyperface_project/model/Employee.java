@@ -36,7 +36,7 @@ public class Employee {
             }}
     }
     @JsonBackReference
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name="department")
     private Department departmentId;
 
@@ -47,7 +47,9 @@ public class Employee {
     @JoinTable(name="emp_project",joinColumns = @JoinColumn(name="empId"),inverseJoinColumns = @JoinColumn(name = "projectId"))
     private List<Project> projects;
 
-
+    @JsonBackReference
+    @OneToOne(mappedBy = "employee",cascade = CascadeType.ALL)
+    private UserAuth userAuth;
 
     public Employee(String name, Department departmentId, List<Project> projects) {
         this.name = name;
