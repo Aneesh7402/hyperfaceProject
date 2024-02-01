@@ -94,6 +94,7 @@ class CustomUserDetailService implements UserDetailsService {
     }
 
     ResponseEntity<String> registerEmp(RegDTO regDTO) throws InvalidFieldException{
+        println("ho")
         if(userAuthRepo.existsByUsername(regDTO.getUsername())){
             return new ResponseEntity<>("Username exists", HttpStatus.BAD_REQUEST)
         }
