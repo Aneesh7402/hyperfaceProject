@@ -50,10 +50,20 @@ public class UserAuthController {
     }
     @GetMapping("/minorPromotionEmployee/{username}")
     @PreAuthorize("hasAnyAuthority('BOARD_MEMBER','MANAGER')")
-    public ResponseEntity<UserAuth> changePriority(@PathVariable("username") String username)throws InvalidPriorityAssignmentException {
+    public ResponseEntity<UserAuth> changePriorityEmp(@PathVariable("username") String username)throws InvalidPriorityAssignmentException {
         return customUserDetailService.minorPromotion(username);
     }
-    
+//    @GetMapping("/minorPromotionEmployee/{username}")
+//    @PreAuthorize("hasAuthority('BOARD_MEMBER')")
+//    public ResponseEntity<UserAuth> changePriorityManager(@PathVariable("username") String username)throws InvalidPriorityAssignmentException {
+//        return customUserDetailService.minorPromotion(username);
+//    }
+//
+//    @GetMapping("/minorPromotionEmployee/{username}")
+//    @PreAuthorize("hasAuthority('BOARD_MEMBER') and principal.getPriority()==5")
+//    public ResponseEntity<UserAuth> changePriorityBoardMember(@PathVariable("username") String username)throws InvalidPriorityAssignmentException {
+//        return customUserDetailService.minorPromotion(username);
+//    }
 
 
 }
